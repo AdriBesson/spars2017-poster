@@ -1,0 +1,126 @@
+\vbox to \myposterheight{%
+%----------------------------------------------------------------------------------------
+%	OBJECTIVES
+%----------------------------------------------------------------------------------------
+
+\begin{block}{Introduction and objectives}
+	
+	\begin{enumerate}
+		\item Ultrasound~(US) imaging uses multiple piezo-electric elements to transmit and receive acoustic pulses
+		\item Time-domain beamforming techniques require sampling rates ranging from \num{3} to \num{10} times the center frequency to minimize the delay-quantization errors
+		\item Such sampling rates may not be achievable in challenging environment, \textit{e.g.} portable devices
+		\item We present a \textbf{compressed-sensing-based US acquisition and reconstruction approach}
+	\end{enumerate}
+	
+\end{block}
+\vfill
+%----------------------------------------------------------------------------------------
+%	Notations
+%----------------------------------------------------------------------------------------
+
+\begin{block}{Notations and model}
+	
+	\begin{columns} % Subdivide the first main column
+		\begin{column}{.54\textwidth} % The first subdivided column within the first main column
+			\begin{itemize}
+				\item Notations:
+				\begin{itemize}
+					\item 1D probe composed of $N_{el}$ transducer elements located at $\bm{r}_i$
+					\item $m_i\left(t\right)$ signal received at $i^{th}$ element
+					\item $\psi \left(t\right)~=~\left(e \ast h_{Tx} \ast h_{Rx}\right) \left(t\right)$ elementary waveform
+					\begin{itemize}
+						\item $e\left(t\right)$ excitation
+						\item $ h_{Tx}\left(t\right)$ impulse response in transmit
+						\item  $ h_{Rx}\left(t\right)$ impulse response in receive
+					\end{itemize} 
+					\item Medium composed of K inhomogeneities located at $\bm{r}_k$ and with reflectivity $\gamma \left(\bm{r}_k\right)$
+				\end{itemize}
+			\end{itemize}
+		\end{column}
+		
+		\begin{column}{.43\textwidth} % The second subdivided column within the first main column
+			\centering
+			\begin{figure}
+				{\footnotesize
+				\input{tikz/tikz_notations_scheme}}
+				%\includegraphics[width=0.9\linewidth]{tikz_SPARS-crop.pdf}
+				\caption{Standard setting for US imaging}
+			\end{figure}
+		\end{column}
+	\end{columns} % End of the subdivision
+	
+	\begin{itemize}
+		\item The signals received at each element follow a \textbf{stream of pulses} model and can be written as:
+		\begin{equation*}
+		m_i\left(t\right)~=~\sum_{k=1}^{K} a_{ik} \psi \left(t - t_{k}\right)
+		\end{equation*}
+		with $\left(a_{ik}, t_{k}\right)_{k=1}^K$ amplitudes and times-of-arrival of the $K$ echo-pulses to the $i^{th}$ transducer-element
+		\item The $N_t$ discretized samples obtained by sampling $m_i\left(t\right)$ at a frequency $f_s$ \textbf{obey a $K$-sparse synthesis model} in a dictionary $\Psi \in \mathbb{R}^{N_t \times N_t}$ made of all the shifted replicas of the pulse~\cite{naini2009}:
+		\begin{equation*}
+			\bm{m}_i = \Psi \bm{a}_i, \textnormal{ with } \| \bm{a}_i\|_0 = K
+		\end{equation*}
+	\end{itemize}
+	
+\end{block}
+\vfill 
+%----------------------------------------------------------------------------------------
+%	METHODS
+%----------------------------------------------------------------------------------------
+
+\begin{block}{The proposed acquisition scheme: US compressive multiplexer}
+	\begin{column}{.54\textwidth} % The first subdivided column within the first main column
+		\begin{itemize}
+			\item \textbf{CMUX}~\cite{kim2012}: Signals from M sensors are modulated and summed:
+			\begin{equation*}
+			y \left(t\right)~=~ \sum_{i=1}^{M} p_i \left(t\right) m_i \left(t\right)
+			\end{equation*}
+			where $p_i\left(t\right)$ is a chipping sequence drawn from a Rademacher distribution
+			\item Signal $y \left(t\right)$ sampled at $f_s$ leading to a compression by a factor of M
+			\item \textbf{US-CMUX}: Use L CMUX each of which grouping M sensors and sharing the same chipping sequences to perform signal acquisition
+			\begin{equation*}
+				\mathsf{Y} = \left[\bm{y_1}, ..., \bm{y_L}\right] \in \mathbb{R}^{N_t \times L}
+			\end{equation*}
+			\item Compression by a factor of M compared to standard US devices
+			\item Can be achieved using mixed signal blocks~\cite{kim2012}
+		\end{itemize}
+	\end{column}
+	\begin{column}{.43\textwidth}
+		\begin{figure}[htb]
+			\includegraphics[width=0.8\linewidth]{figures/CMUX.pdf}
+			\caption{CMUX architecture}
+			\label{fig_CMUX}
+		\end{figure}
+	\begin{figure}[htb]
+		\includegraphics[width=0.8\linewidth]{figures/USCMUX.pdf}
+		\caption{US-CMUX architecture}
+		\label{fig_USCMUX}
+	\end{figure}
+	\end{column}
+	
+\end{block}
+\vfill
+%----------------------------------------------------------------------------------------
+%	US image reconstruction
+%----------------------------------------------------------------------------------------
+
+\begin{block}{Proposed reconstruction algorithm}
+	\begin{itemize}
+		\item $\ell_{11}$-minimization problem is solved:
+		\begin{equation*}
+		\min_{\bar{\mathsf{A}} \in \mathbb{R}^{MN_t \times L}} \lVert \bar{\mathsf{A}} \lVert_{11}
+		\textnormal{ subject to } \| \mathsf{Y}- \Psi_{P}\bar{\mathsf{A}}\|_F\leq\epsilon
+		\end{equation*}
+		$\Psi_{P}~=~\left[\Psi_{p1}, ..., \Psi_{pM}\right] \in \mathbb{R}^{N_t \times M N_t}$, $\Psi_{pi}~=~\left[\bm{p}_i \otimes \Psi_1, ..., \bm{p}_i \otimes \Psi_{N_t}\right] \in \mathbb{R}^{N_t \times N_t}$ 
+		\begin{equation*}
+		\mathsf{A}=
+		\begin{bmatrix}
+		\bm{a}_1 & \bm{a}_{M+1} & \dotsb & \bm{a}_{N_{el}-M+1}\\
+		\vdots & \vdots & & \vdots \\
+		\bm{a}_M & \bm{a}_{2M} & \dotsb &\bm{a}_{N_{el}} \\
+		\end{bmatrix}
+		\end{equation*}
+		\item Solved with primal dual forward backward algorithm~\cite{combettes2014} 
+	\end{itemize}
+\end{block}
+%----------------------------------------------------------------------------------------
+}%

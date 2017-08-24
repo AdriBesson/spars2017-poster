@@ -1,0 +1,55 @@
+\documentclass[final,hyperref={pdfpagelabels=false}]{beamer}
+%%% THEME FOR THE POSTER %%%
+\usetheme{LTS5}
+
+%%% PACKAGES DECLARATION
+\input{settings/package_declaration_settings}
+\input{settings/own_package_settings}
+\input{tikz/tikz_settings}
+
+%%% COMMANDS %%%
+\input{settings/newcommands}
+
+
+%%% TITLE CONTENT %%%
+\input{content/title_def}
+
+\addbibresource{SPARS2017.bib} % Input bibliography file
+
+%%% COLUMN WIDTH %%%
+\setlength{\BlankColumnWidth}{.005\textwidth}
+\setlength{\LeftColumnWidth}{.52\textwidth}
+\setlength{\RightColumnWidth}{\dimexpr \textwidth - 3\BlankColumnWidth - \LeftColumnWidth}
+
+%%% BIBLIOGRAPHY %%%
+\addbibresource{SPARS2017.bib}
+
+
+\begin{document}
+
+	\begin{frame}[t] 
+	
+	% Create the title
+	\maketitle
+		
+		\begin{columns}[t] 
+			
+			\AddBlankColumn % Empty spacer column
+			
+			\begin{column}{\LeftColumnWidth} % The first column
+				\input{content/left_column}
+			\end{column} % End of the first column
+	
+			\AddBlankColumn % Empty spacer column
+	
+			\begin{column}{\RightColumnWidth} % The second column
+				\input{content/right_column}
+			\end{column} % End of the second column
+	
+			\AddBlankColumn % Empty spacer column
+	
+		\end{columns} % End of all the columns in the poster
+
+	\end{frame} % End of the enclosing frame
+
+\end{document}

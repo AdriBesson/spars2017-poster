@@ -1,0 +1,109 @@
+% *** TIKZ PACKAGES ***
+\usepackage{xparse}
+\usepackage{tikz}
+\usetikzlibrary{shapes, arrows.meta, decorations.pathmorphing}
+\usetikzlibrary{calc, positioning}
+\usetikzlibrary{backgrounds}
+\usetikzlibrary{intersections} % provides name path=
+\usetikzlibrary{angles} % provides pic angle
+
+\usepackage{etoolbox}
+
+% Tikzset
+\tikzset{%
+	block/.style = {draw, shape=rectangle, thick, minimum height=2em, minimum width=2em},
+	sum/.style = {draw, shape=circle, thick, inner sep=0pt},
+	conn/.style={fill, shape=circle, minimum size=0.1cm, inner sep=0, outer sep=0},
+	inout/.style={inner sep=0, outer sep=0},
+	dot/.style={fill=, shape=circle, minimum size=\pgflinewidth, inner sep=0, outer sep=0},
+	param/.style={inner sep=0, outer sep=1pt},
+	loosely dotted round/.style={dash pattern=on 0pt off 6\pgflinewidth, line cap=round},
+	%	transducer/.style = {shape=rectangle, draw=black, fill=black!20!white, thick, minimum height=0.15cm, minimum width=0.30cm, inner sep=0pt},
+	%	my funny rectangle/.style n args={4}{%
+	%    rectangle,
+	%    draw,
+	%    fit={(#1,#3) (#2,#4)}
+	%%    append after command={\pgfextra{\let\mainnode=\tikzlastnode}
+	%%      node[above right] at (\mainnode.north west) {#3}%
+	%%      node[above left] at (\mainnode.north east) {#4}%
+	%%      node[below left] at (\mainnode.north west) {#1}%
+	%%      node[above left] at (\mainnode.south west) {#2}%
+	%%    },
+	%  }
+}
+
+%\def\td_number{3}
+
+%\newcommand*{\transducer}[4][-1][-2]{\path[draw=black, fill=black!20!white] (#3, #1) rectangle (#4, #2)}
+
+% arg1: lx (optional, default=1)
+% arg2: ly (optional, default=2)
+% arg3: x_center
+% arg4: y_center
+%\NewDocumentCommand{\transducer}{ O{-1} O{-2} m }{\path[draw=black, fill=black!20!white] (#3, #1) rectangle (#4, #2)}
+
+\NewDocumentCommand{\rectangle}{ m m }{%
+	%\newlength{\Xone}{#1 cm}%\pgfmathparse{#1+1}\pgfmathresult
+	\path[draw=black, fill=black!20!white] #1 rectangle #2
+}
+
+%\pgfdeclarelayer{bg}    % declare background layer
+%\pgfsetlayers{bg,main}  % set the order of the layers (main is the standard layer)
+
+% This bascially automates a \newcommand{<name>}{} to ensure
+% that a command with the given <name> does not already exist
+\newcommand*{\pgfmathsetnewmacro}[2]{%
+	\newcommand*{#1}{}% Error if already defined
+	\pgfmathsetmacro{#1}{#2}%
+}%
+
+% Transducer commands
+\newcommand*{\transducerNumb}{10}
+\newcommand*{\transducerWidth}{0.75}
+\newcommand*{\transducerHeight}{0.25}
+\newcommand*{\transducerInitXPos}{3}
+\newcommand*{\transducerXOffset}{1}
+\definecolor{transducer-color}{gray}{0.8}
+\newcommand*{\transducerLabeled}{9}
+
+% Measurement commands
+\newcommand*{\measurementLength}{6}
+\definecolor{measurement-color}{gray}{0.7}
+
+% Insonified domain
+\pgfmathsetmacro{\domainXMin}{\transducerInitXPos}
+\pgfmathsetmacro{\domainXMax}{12}
+\pgfmathsetmacro{\domainZMin}{1}
+\pgfmathsetmacro{\domainZLength}{7}
+\pgfmathsetmacro{\domainZMax}{\domainZMin+\domainZLength}
+\pgfmathsetmacro{\domainDxOffset}{1}
+\pgfmathsetmacro{\domainDzOffset}{1}
+\definecolor{domain-color}{gray}{0.7}
+\definecolor{scatterer-color}{gray}{0}
+
+% Wavefront and time of flight
+\definecolor{wavefront-color}{gray}{0.5}
+
+% Axes
+\newcommand*{\axesOffset}{1.5}
+
+% Conics
+\definecolor{conic-color}{gray}{0}
+% 	Ellipse
+% http://tex.stackexchange.com/questions/75017/draw-an-ellipse-from-the-two-focus-points-foci-and-the-sum-of-the-distances-fr
+\newcommand*{\ellipsebyfoci}[4]{% options (draw, fill, color, etc.), focus pt1, focus pt2, cste
+	\path[#1] let \p1=(#2), \p2=(#3), \p3=($(\p1)!.5!(\p2)$)
+	in \pgfextra{
+		\pgfmathsetmacro{\angle}{atan2(\x2-\x1,\y2-\y1)}
+		\pgfmathsetmacro{\distfoci}{veclen(\x2-\x1,\y2-\y1)/1cm} % convert back to cm
+		\pgfmathsetmacro{\axeone}{#4/2}
+		\pgfmathsetmacro{\axetwo}{sqrt(\axeone^2 - (0.5*\distfoci)^2)}
+%		\pgfmathsetmacro{\focal}{veclen(\x2-\x1,\y2-\y1)/2/1cm}
+%		\pgfmathsetmacro{\lentotcm}{\focal*2*#4}
+%		\pgfmathsetmacro{\axeone}{(\lentotcm - 2 * \focal)/2+\focal}
+%		\pgfmathsetmacro{\axetwo}{sqrt((\lentotcm/2)*(\lentotcm/2)-\focal*\focal}
+	}
+%	(\p3) ellipse[x radius=\axeone cm,y radius=\axetwo cm, rotate=\angle];
+	(\p3) ellipse[x radius=\axeone,y radius=\axetwo, rotate={90-\angle}];
+%	(\p1) -- node[midway, sloped, above]{\distfoci} (\p2);
+}

@@ -1,0 +1,437 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Signal Processing Laboratory (LTS5) - EPFL      %
+% LaTeX beamer template                           %
+% Authors:                                        %
+%   D. Perdios – dimitris.perdios@epfl.ch         %
+%   A. Besson – adrien.besson@epfl.ch             %
+% v0.1 - 18.11.16                                 %
+% Typeset configuration: pdfLaTeX + Biber         %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%% OPTIONS
+%\DeclareOption{widescreen}{
+%	\geometry{paperheight=3.75in, paperwidth=6.66in}
+%	\addtobeamertemplate{frametitle}{}{\vspace{1cm}}
+%}
+%TODO: check beamer aspectratio option =169
+%\ProcessOptions % Command required for option declaration
+
+%% PACKAGES
+% Fonts
+\RequirePackage[T1]{fontenc}
+\RequirePackage[utf8]{inputenc}
+\RequirePackage{lmodern} % latin modern font
+%\RequirePackage[scaled]{helvet} % sans serif typo
+
+% Math
+\RequirePackage{amsmath}
+\RequirePackage{amsfonts}
+\RequirePackage{amssymb}
+\RequirePackage{bm}
+
+\RequirePackage{calc}
+\RequirePackage{geometry}
+\RequirePackage{textpos}
+
+% Patch in order to exclude every numbering of frames that aren't displayed in current mode (handout, trans, etc.)
+%	http://tex.stackexchange.com/a/49806/3323
+% etoolbox usefull for conditionals (e.g. ifdefempty command)
+\RequirePackage{etoolbox}
+\pretocmd{\beamer@@@@frame}{\alt<#1>{}{\beamer@noframenumberingtrue}}
+
+%% GENERAL
+%\mode<presentation>{
+%\usetheme[]{default}
+%}
+%\mode<presentation>
+
+
+
+%% NEWCOMMANDS
+% Frameparagraph
+%TODO: see if a better way to define a paragraph
+%TODO: \par is missing but not easy -> use texblock beamer command
+\newcommand{\frameparagraph}[1]{\textcolor{LTS5Blue}{#1}}
+\newcommand{\@supervisor}{}
+\newcommand{\supervisor}[1]{\renewcommand{\@supervisor}{#1}}
+%TODO: supervisor -> https://bitbucket.org/marczellm/beamerports
+\newcommand{\@contactName}{}% \relax needed to work with etoolbox ifdefempty command
+% Contact name and email
+\newcommand{\contactName}[1]{\renewcommand{\@contactName}{#1}}
+\newcommand{\@contactEmail}{}
+\newcommand{\contactEmail}[1]{\renewcommand{\@contactEmail}{#1}}
+% Twitter: @yourtwitter
+\newcommand{\@contactTwitter}{}
+\newcommand{\contactTwitter}[1]{\renewcommand{\@contactTwitter}{#1}}
+% Github logo usage: https://github.com/logos
+\newcommand{\@contactGithub}{}
+\newcommand{\contactGithub}[1]{\renewcommand{\@contactGithub}{#1}}
+\newcommand{\@contactGitlab}{}
+\newcommand{\contactGitlab}[1]{\renewcommand{\@contactGitlab}{#1}}
+\newcommand{\@contactBitbucket}{}
+\newcommand{\contactBitbucket}[1]{\renewcommand{\@contactBitbucket}{#1}}
+\newcommand{\@contactLaboratoryName}{}
+\newcommand{\contactLaboratoryName}[1]{\renewcommand{\@contactLaboratoryName}{#1}}
+\newcommand{\@contactLaboratoryWebsite}{}
+\newcommand{\contactLaboratoryWebsite}[1]{\renewcommand{\@contactLaboratoryWebsite}{#1}}
+\newcommand{\@contactUniversityName}{}
+\newcommand{\contactUniversityName}[1]{\renewcommand{\@contactUniversityName}{#1}}
+\newcommand{\@contactUniversityWebsite}{}
+\newcommand{\contactUniversityWebsite}[1]{\renewcommand{\@contactUniversityWebsite}{#1}}
+\newcommand{\@thanksMessage}{}
+\newcommand{\thanksMessage}[1]{\renewcommand{\@thanksMessage}{#1}}
+\newcommand{\@thanksMessageDefault}{THANK YOU FOR YOUR ATTENTION!}
+%TODO: check more in detail the base commands for conference type specific (see beamerbasetitle.sty, and beamerbasemisc.sty)
+%%
+%%
+%% The \date command
+%%
+%%
+%\def\date{\@dblarg\beamer@date}
+%\long\def\beamer@date[#1]#2{%
+%  \def\insertdate{#2}%
+%  \def\beamer@shortdate{#1}%
+%  }
+%\date{\today}
+%
+%
+%\newcommand\insertshortdate[1][]{%
+%  {%
+%    \let\thanks=\@gobble%
+%    \beamer@setupshort{#1}%
+%    \beamer@insertshort{\beamer@shortdate}%
+%  }}
+
+%% SECTIONS
+%TODO: check \sectionpage stuff -> http://tex.stackexchange.com/questions/117658/automatically-generate-section-title-slides-in-beamer
+%TODO: check the font size of the contact informations (smaller)?
+%TODO: add sponsor/funding logos?
+\newcommand{\thanksframe}{
+	\begin{frame}[t]
+		\vspace{0.2\textheight}
+		\begin{center}
+			\Large\bfseries\centering
+			\textcolor{LTS5Blue}{\ifdefempty{\@thanksMessage}{\@thanksMessageDefault}{\@thanksMessage}}
+		\end{center}
+		
+		\ifdefempty{\@contactName}{}{%
+%			\renewcommand*{\arraystretch}{1}
+			{\vskip0pt plus 1filll}% Fill up to the bottom of the slide
+%			{\frameparagraph{\@contactName}\par}%\par necessary because not contained in \frameparagraph
+			\setlength{\tabcolsep}{3.0pt}% orig: 6.0pt
+%			\begin{tabular}{@{}cl} % @{} if no space
+			\begin{tabular}{cl}
+				\multicolumn{2}{@{}l}{\textcolor{LTS5Blue}{\@contactName}}\\
+				\ifdefempty{\@contactEmail}{}{%
+					\faEnvelopeO & \href{mailto:\@contactEmail}{\texttt{\@contactEmail}}\\}
+				\ifdefempty{\@contactTwitter}{}{%
+					\faTwitter & \href{https://twitter.com/\@contactTwitter}{\texttt{@\@contactTwitter}}\\}
+				\ifdefempty{\@contactGithub}{}{%
+					\faGithub & \url{\@contactGithub}\\}
+				\ifdefempty{\@contactGitlab}{}{%
+					\faGitlab & \url{\@contactGitlab}\\}
+				\ifdefempty{\@contactBitbucket}{}{%
+					\faBitbucket & \url{\@contactBitbucket}\\}
+				\ifdefempty{\@contactLaboratoryName}{}{%
+					\faUsers & \href{\@contactLaboratoryWebsite}{\@contactLaboratoryName}\\}
+				\ifdefempty{\@contactLaboratoryWebsite}{}{%
+					\faGlobe & \url{\@contactLaboratoryWebsite}\\}
+				\ifdefempty{\@contactUniversityName}{}{%
+					\faUniversity & \ifdefempty{\@contactUniversityWebsite}{\@contactUniversityName}{\href{\@contactUniversityWebsite}{\@contactUniversityName}}\\}
+			\end{tabular}
+		}
+%			
+	%	\faRa{} \faRebel{} \faWrench{} \faQuestion{} \faQuestionCircle{} \faQuestionCircleO{} \faRocket{} \faUsers{}
+	\end{frame}
+}
+
+% References frame
+\newcounter{citnumbcount} % incremented by \AtEveryCitekey (biblatex) command
+\newcommand{\referencesframe}{
+	\ifnumcomp{\value{citnumbcount}}{>}{0}{%
+	\section{References}
+	\begin{frame}[t,allowframebreaks]
+	\frametitle{References}
+	%\printbibliography[heading=bibintoc] % not working properly in beamer class
+	\printbibliography
+	\end{frame}
+	}%
+	{}%Do not create a frame to \printbibliography if there is no citations (i.e. \cite command) in the document
+}
+
+%%% LISTS
+% See beamerbaselocalstructure.sty for the definitions
+%\renewcommand{\itemize}[1][]{%
+%  \beamer@ifempty{#1}{}{\def\beamer@defaultospec{#1}}%
+%  \ifnum \@itemdepth >2\relax\@toodeep\else
+%    \advance\@itemdepth\@ne
+%    \beamer@computepref\@itemdepth% sets \beameritemnestingprefix
+%    \usebeamerfont{itemize/enumerate \beameritemnestingprefix body}%
+%    \usebeamercolor[fg]{itemize/enumerate \beameritemnestingprefix body}%
+%    \usebeamertemplate{itemize/enumerate \beameritemnestingprefix body begin}%
+%    \list
+%      {\usebeamertemplate{itemize \beameritemnestingprefix item}}
+%      {%
+%        \setlength\topsep{3.0pt}%NEW, orig: 3.0pt plus 2.0pt minus 2.5pt
+%        \setlength\partopsep{3.0pt}%NEW, orig: 3.0pt plus 1.0pt minus 1.0pt
+%        \setlength\parsep{0pt}%NEW, orig: 0.0pt
+%        \setlength\itemsep{3.0pt}%NEW, orig: 3.0pt plus 2.0pt minus 3.0pt
+%        \def\makelabel##1{%
+%          {%
+%            \hss\llap{{%
+%                \usebeamerfont*{itemize \beameritemnestingprefix item}%
+%                \usebeamercolor[fg]{itemize \beameritemnestingprefix item}##1}}%
+%          }%
+%        }%
+%      }
+%  \fi%
+%  \beamer@cramped%
+%  \raggedright%
+%  \beamer@firstlineitemizeunskip%
+%}
+
+%% COLORS
+%TODO: global color definition for the beamer style
+%\definecolor{LTS5Blue}{RGB}{38,33,81} % logo pixel RGB from Ghostscript
+%\definecolor{LTS5Blue}{RGB}{38,33,81} % logo pixel RGB from Ghostscript
+\definecolor{LTS5Blue}{RGB}{19,49,109} % Same as MilanoBlue
+%\definecolor{MilanoBlue}{RGB}{19,49,109}
+%\definecolor{MilanoLightBlue}{RGB}{24,55,123}
+%\definecolor{MilanoDarkBlue}{RGB}{16,36,85}
+%\definecolor{MilanoTitleBlue}{RGB}{7,27,80}
+%\definecolor{MilanoTextGray}{RGB}{66,66,66}
+%\definecolor{MilanoTitleLine}{RGB}{23,33,113}
+%\definecolor{MilanoBackground}{RGB}{234,234,234}
+%\definecolor{LTS5Background}{RGB}{234,234,234}
+
+\setbeamercolor{structure}{fg=LTS5Blue} % default is fg=beamer@blendedblue
+%\setbeamercolor{normal text}{fg=MilanoTextGray, bg=}
+%\setbeamercolor{frametitle}{fg=MilanoTitleBlue}
+%\setbeamercolor{footline}{bg=MilanoBlue, fg=white}
+%\setbeamercolor{logo}{parent={footline}}
+%\setbeamercolor{institute in head/foot}{parent={footline}}
+%\setbeamercolor{item}{parent={normal text}}
+%\setbeamercolor{title}{fg=black}
+%\setbeamercolor{title page}{fg=black}
+%\setbeamercolor{block title}{fg=MilanoLightBlue}
+%\setbeamercolor{block title example}{fg=MilanoLightBlue}
+%\setbeamercolor{section in toc}{fg=MilanoLightBlue}
+%\setbeamercolor{subsection in toc}{fg=MilanoLightBlue}
+
+%% FONTS
+%\setbeamerfont{title}{size=\LARGE}
+%\setbeamerfont{author}{shape=\itshape}
+%\setbeamerfont{frametitle}{series=\bfseries}
+%\setbeamerfont{institute}{family=\rmfamily, series=\bfseries, size=\normalsize}
+
+%% TEMPLATES
+\setbeamertemplate{navigation symbols}{} % no nav symbols
+%\setbeamertemplate{itemize items}[circle]
+%\setbeamertemplate{background canvas}[vertical shading][bottom=LTS5Background,top=white]
+
+%% ETHZ example for the definition of block titles
+%%TODO: check this ETHZ example
+\def \ethcol {31,64,122}
+\definecolor{colorSG}{RGB}{\ethcol}  %% This is the ETH7 color
+\definecolor{colorSG.fg}{rgb}{\ethcol}  %% This is the ETH7 color
+\usecolortheme[RGB={\ethcol}]{structure}
+\definecolor{black}{RGB}{0,0,0}
+\definecolor{white}{RGB}{255,255,255}
+%
+\setbeamercolor{block title}{use=colorSG,fg=LTS5Blue,bg=colorSG.fg!20!bg}
+\setbeamercolor{block title alerted}{use=alerted text,fg=alerted text.fg,bg=alerted text.fg!20!bg}
+\setbeamercolor{block title example}{use=example text,fg=example text.fg,bg=example text.fg!20!bg}
+\setbeamercolor{block body}{parent=normal text,use=block title,bg=block title.bg!50!bg}
+\setbeamercolor{block body alerted}{parent=normal text,use=block title alerted}
+\setbeamercolor{block body example}{parent=normal text,use=block title example}
+\setbeamercolor{normal text}{fg=black,bg=white}
+\setbeamercolor{alerted text}{fg=colorSG}
+%
+\setbeamertemplate{block begin}{
+ % \setlength{\leftmargini}{0.55cm}
+   \vskip.75ex % spacing between blocks?
+   \begin{beamercolorbox}[sep=.75ex]{block title}%
+     \usebeamerfont*{block title}\insertblocktitle
+   \end{beamercolorbox}%
+   %{\ifbeamercolorempty[bg]{block body}{}{\nointerlineskip\vskip-0.5pt}}%
+   \usebeamerfont{block body}%
+   \begin{beamercolorbox}[sep=.75ex,vmode]{block body}%
+     %\ifbeamercolorempty[bg]{block body}{\vskip-.25ex}{\vskip-.75ex}%
+   }
+   \setbeamertemplate{block end}{
+   \end{beamercolorbox}\vspace*{1ex} 
+}
+
+
+%% NEWLENGTHS
+%TODO: sizes of frametitle and footline with respect to fontsize so that other aspect ratios should not change the general layout
+% 	Logo lengths
+\newlength{\LogoHeight}				\setlength{\LogoHeight}{0.07\paperwidth}
+\newlength{\LogoSkip}				\setlength{\LogoSkip}{0.1\LogoHeight}
+%	Rule lengths
+\newlength{\FrametitleRuleWidth}	\setlength{\FrametitleRuleWidth}{0.95\paperwidth}
+\newlength{\FootlineRuleWidth}		\setlength{\FootlineRuleWidth}{0.95\paperwidth}
+\newlength{\FrametitleRuleHeight}	\setlength{\FrametitleRuleHeight}{0.5pt}
+\newlength{\FootlineRuleHeight}		\setlength{\FootlineRuleHeight}{\FrametitleRuleHeight}
+% 	Footline lengths
+\newlength{\FootlineHeight}			\setlength{\FootlineHeight}{\LogoHeight+2\LogoSkip}
+\newlength{\FootlineWidth}			\setlength{\FootlineWidth}{\paperwidth}
+\newlength{\FootlineBoxWidth}		\setlength{\FootlineBoxWidth}{\paperwidth/3}
+\newlength{\FootlineBoxHeight}		\setlength{\FootlineBoxHeight}{0.5\FootlineHeight+0.5\LogoHeight}
+\newlength{\FootlineBoxDepth}		\setlength{\FootlineBoxDepth}{0.5\FootlineHeight-0.5\LogoHeight}
+\newlength{\FootlineBoxSkip} 		\setlength{\FootlineBoxSkip}{0.5\paperwidth-0.5\FootlineRuleWidth+\LogoSkip}
+% 	Frametitle lengths
+\newlength{\FrametitleHeight}		\setlength{\FrametitleHeight}{0.1\paperwidth}
+\newlength{\FrametitleWidth}		\setlength{\FrametitleWidth}{\paperwidth}
+\newlength{\FrametitleBoxDepth}		\setlength{\FrametitleBoxDepth}{4pt} % TO avoid cropping of the text (strut not possible)
+\newlength{\FrametitleBoxWidth}		\setlength{\FrametitleBoxWidth}{\FrametitleWidth}
+\newlength{\FrametitleBoxHeight}	\setlength{\FrametitleBoxHeight}{\FrametitleHeight-\FrametitleBoxDepth}
+\newlength{\FrametitleBoxSkip} 		\setlength{\FrametitleBoxSkip}{\FootlineBoxSkip}
+% 	Video lengths
+\newlength{\VideoFullWidth} 		\setlength{\VideoFullWidth}{\FrametitleRuleWidth}
+\newlength{\VideoFullHeight} 		\setlength{\VideoFullHeight}{0.5625\VideoFullWidth}
+
+% Colors
+\setbeamercolor{RuleBoxColor}{fg=black,bg=}
+\setbeamercolor{OrangeBoxColor}{fg=black,bg=orange}
+\setbeamercolor{YellowBoxColor}{fg=black,bg=yellow}
+\setbeamercolor{FrametitleBoxColor}{parent=frametitle}
+\setbeamercolor{FootlineLeftBoxColor}{parent=frametitle}
+\setbeamercolor{FootlineCenterBoxColor}{parent=frametitle}
+\setbeamercolor{FootlineRightBoxColor}{parent=frametitle}
+
+% Logos
+\pgfdeclareimage[height=\LogoHeight]{epfl}{figures/logos/epfl_logo.pdf}
+\pgfdeclareimage[height=\LogoHeight]{lts5}{figures/logos/lts5_logo.pdf}
+
+
+%% TITLE PAGE
+%TODO: \setbeamertemplate{title page}
+
+%% FRAMETITLE
+%TODO: Adjust the size of the box if the \frametitle or \framesubtitle span more than one line, see -> http://tex.stackexchange.com/questions/231554/set-beamercolorbox-height-automatically-to-sister-beamercolorbox-on-frametitle
+\setbeamertemplate{frametitle}{%
+	\nointerlineskip% % remove initial 1pt vertical space
+	\begin{beamercolorbox}[
+		wd=\FrametitleBoxWidth,
+		ht=\FrametitleBoxHeight,
+		dp=\FrametitleBoxDepth,
+		left,
+		leftskip=\FrametitleBoxSkip,
+		rightskip=\FrametitleBoxSkip,
+		sep=0pt,
+		colsep=0pt,
+		colsep*=0pt,
+		shadow=false,
+		rounded=false,
+		ignorebg=false
+%		vmode
+	]{FrametitleBoxColor}
+%	]{YellowBoxColor}% 	% For testing purpose
+		\insertframetitle\par
+		\normalsize\insertframesubtitle\strut
+%		\rule{\FrametitleBoxWidth - 2\FrametitleBoxSkip}{5pt}
+	\end{beamercolorbox}	
+	\offinterlineskip % REMOVES VSPACE BETWEEN BOXES. NOT BEFORE OTHERWISE MESSED UP BASELINESKIP WITH FRAMETITLE AND FRAMESUBTITLE
+	\begin{beamercolorbox}[
+		wd=\paperwidth,
+		ht=\FrametitleRuleHeight,
+		dp=0pt,
+		center,
+		sep=0pt
+%		vmode
+	]{RuleBoxColor}
+%	]{OrangeBoxColor} % For testing prupose
+		\rule{\FrametitleRuleWidth}{\FrametitleRuleHeight}
+	\end{beamercolorbox}
+}
+
+
+%% FOOTLINE
+%TODO: check some details about the different boxes -> http://tex.stackexchange.com/questions/83930/what-are-the-different-kinds-of-boxes-in-latex
+%\setbeamertemplate{footline}{\relax
+%	\begin{beamercolorbox}[
+%			wd=\paperwidth,
+%			ht=\FootlineRuleHeight,
+%			dp=0pt,
+%			center
+%		]{RuleBoxColor}
+%			\rule{\FootlineRuleWidth}{\FootlineRuleHeight}
+%	\end{beamercolorbox}
+%	\hbox{\relax
+%  		\begin{beamercolorbox}[
+%			wd=\FootlineBoxWidth,
+%			ht=\FootlineHeight, % \FootlineHeight = \FootlineBoxHeight+\FootlineBoxDepth,
+%			dp=0pt,
+%			sep=0pt,
+%			%ht=\FootlineBoxHeight,
+%			%dp=\FootlineBoxDepth,
+%			left, leftskip=\FootlineBoxSkip
+%		]{FootlineLeftBoxColor}% 	% ATTENTION TRANSPARENT SINON MINI CROP DE LA BARRE
+%%		]{YellowBoxColor}% 	% For testing purpose
+%		%TODO: understand why a <bank line> is required before \vbox
+%			
+%			\vbox to \FootlineHeight{%
+%				  	\vfil\pgfuseimage{lts5}\vfil
+%				  }
+%  		\end{beamercolorbox}%
+%		\begin{beamercolorbox}[
+%			wd=\FootlineBoxWidth,
+%			%ht=\FootlineBoxHeight,
+%			%dp=\FootlineBoxDepth,
+%			ht=\FootlineHeight, % \FootlineHeight = \FootlineBoxHeight+\FootlineBoxDepth,
+%			dp=0pt,
+%			sep=0pt,
+%			center
+%			%left, leftskip=0pt,
+%			%right, rightskip=0pt
+%		]{FootlineCenterBoxColor}%	% ATTENTION TRANSPARENT SINON MINI CROP DE LA BARRE
+%					\hbox to \FootlineBoxWidth{%
+%						\vbox to \FootlineHeight{%
+%							\vfil
+%							\hfil \insertshortdate{}
+%							\vfil
+%							\hfil \insertframenumber{}\,/\,\inserttotalframenumber{}
+%							\vfil
+%							}%
+%						}%
+%  		\end{beamercolorbox}%
+%	  	\begin{beamercolorbox}[
+%			wd=\FootlineBoxWidth,
+%			ht=\FootlineHeight, % \FootlineHeight = \FootlineBoxHeight+\FootlineBoxDepth,
+%			dp=0pt,
+%			sep=0pt,
+%			%ht=\FootlineBoxHeight,
+%			%dp=\FootlineBoxDepth,
+%			right, rightskip=\FootlineBoxSkip
+%		]{FootlineRightBoxColor}% 	% ATTENTION TRANSPARENT SINON MINI CROP DE LA BARRE	  		
+%%		]{OrangeBoxColor}% 	% For testing purpose	  	
+%		%TODO: understand why a <bank line> is required before \vbox
+%			
+%	  		\vbox to \FootlineHeight{%
+%				  	\vfil\pgfuseimage{epfl}\vfil
+%				  }
+%	  	\end{beamercolorbox}%
+%	}
+%}
+%%
+
+% INTERMEDIATE TABLE OF CONTENTS
+%% Table of contents at the beginning of each sections
+%\AtBeginSection[]
+%{
+%  \begin{frame}<beamer>{Outline}
+%    \tableofcontents[currentsection]
+%  \end{frame}
+%}
+
+%% Table of contents at the beginning of each subsections
+%\AtBeginSubsection[]
+%{
+%  \begin{frame}<beamer>{Outline}
+%    \tableofcontents[currentsection]
+%  \end{frame}
+%}
+
+%\beamerdefaultoverlayspecification{<+->}
